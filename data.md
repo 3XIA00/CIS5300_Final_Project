@@ -21,8 +21,8 @@ data/
     dev_sent_emo.csv
     test_sent_emo.csv
   processed/
-    train.jsonl             # Official train membership, sorted by dialogue/utterance
-    train_clean.jsonl       # Recommended training targets AND context
+    train.jsonl             # Official train membership, sorted by dialogue/utterance (main protocol)
+    train_clean.jsonl       # Optional copy without one exact-key match (supplementary)
     dev.jsonl               # Official dev membership, unchanged
     test.jsonl              # Official test membership, unchanged
   label_map.json
@@ -41,8 +41,8 @@ These counts are measured from the downloaded CSVs and generated JSONL files.
 
 | Split | Utterances | Distinct dialogue IDs | Role |
 |---|---:|---:|---|
-| Official train (`train.jsonl`) | 9,989 | 1,038 | Original benchmark copy |
-| Clean train (`train_clean.jsonl`) | 9,988 | 1,038 | Training and training-context construction |
+| Official train (`train.jsonl`) | 9,989 | 1,038 | Main protocol: training and training-context construction |
+| Exact-key-filtered train (`train_clean.jsonl`) | 9,988 | 1,038 | Supplementary sensitivity check |
 | Dev (`dev.jsonl`) | 1,109 | 114 | Model/configuration selection |
 | Test (`test.jsonl`) | 2,610 | 280 | Final evaluation |
 
@@ -59,7 +59,7 @@ The repository description reports 1,039 training dialogues. In this pinned CSV,
 | anger | 6 | 1,109 | 1,109 | 153 | 345 |
 | **Total** | | **9,989** | **9,988** | **1,109** | **2,610** |
 
-Neutral constitutes 47.15% of clean training records; fear is 2.68% and disgust is 2.71%. Planned evaluation uses weighted F1 and macro F1, supported by per-class scores and a confusion matrix. No trained-model performance is claimed in this milestone.
+Neutral constitutes 47.15% of official training records (the same to two decimals in the filtered copy); fear is 2.68% and disgust is 2.71%. Planned evaluation uses weighted F1 and macro F1, supported by per-class scores and a confusion matrix. No trained-model performance is claimed in this milestone.
 
 ## Format and real example
 
@@ -100,15 +100,29 @@ Exact text repetition alone is not treated as a duplicate example: short respons
 
 The single matching source-time item is `train:12:7` / `test:85:0`: Joey's utterance in season 6, episode 4, from `00:10:18,743` to `00:10:21,536`. The source records also share their neutral annotation. Full details are recorded in `excluded_training_records.json`.
 
-The clean training file removes training records matching a dev/test source-time key. The rule uses source metadata and text, not emotion labels; it excludes exactly `train:12:7` in this snapshot. Original raw CSVs and `train.jsonl` remain intact for traceability and explicitly labeled official-protocol comparisons.
+### Suspected scene-level overlap (heuristic audit)
 
-**Use `train_clean.jsonl` for both training examples and the history from which training contexts are built.** Excluding the record only as a target while retaining it as context would still expose its text. Use the unchanged dev and test files. The clean training source-time keys have zero overlap with held-out keys under this audit. This check does not establish absence of paraphrases, scene-level dependencies, or every possible form of contamination.
+The exact key above requires identical season, episode, timestamps, speaker, and text, so it misses the same scene when MELD segments it differently or records inconsistent metadata. A second, heuristic audit flagged held-out utterances whose normalized text (lowercase alphanumerics, at least 40 characters) is contained in a training utterance or vice versa, or whose speaker, end timestamp, and text prefix match a training utterance. These rules flag individual utterances; we then manually reviewed each flagged scene side by side with its training counterpart and added neighboring turns from the same source interval that the rules missed (for example, short lines or re-segmented turns). The rules found no dev matches; the reviewed test overlaps are:
+
+| Test items | Training items | Observation |
+|---|---|---|
+| `test:84:0–2` (whole dialogue) | `train:12:4–6` | Same speakers and text, same or near-identical timestamps; test metadata says season 1, episode 5 instead of 6/4, and all three emotion labels differ |
+| `test:85:0–5` (whole dialogue) | `train:12:7–11` | The same scene segmented differently; only `85:0` / `train:12:7` matches the exact key |
+| `test:155:0–1` | `train:51:8`, `train:51:10` | Season 3, episode 15; near-identical text and overlapping source intervals. The first pair shares an end time and was flagged by the rules; the second shares a start time and was added on manual review |
+
+This is roughly 11 test utterances in 3 test dialogues (about 0.4% of test). It is a list of suspected same-source overlap found by heuristic rules plus manual review of the flagged scenes, not a complete inventory: paraphrased or more heavily re-segmented overlap may remain. A recurring line such as `train:776:4` / `test:225:0` from a different time in the same episode was judged a legitimate repetition.
+
+### Training protocol
+
+**Main protocol: use the official splits** (`train.jsonl`, `dev.jsonl`, `test.jsonl`) so results are comparable with published MELD numbers, and report the suspected overlap above as a known limitation.
+
+`train_clean.jsonl` is an optional sensitivity check. It removes training records matching a dev/test exact source-time key; the rule uses source metadata and text, not emotion labels, and excludes exactly `train:12:7` in this snapshot. When it is used, it must supply both the training targets and the history from which training contexts are built, because excluding a record only as a target while retaining it as context would still expose its text. Its exact source-time keys have zero overlap with held-out keys, but this statement is limited to that strict key: the scene-level overlaps listed above remain in it (for example `train:12:4–6` and `train:12:8–11`), so it must not be described as fully deduplicated. Dev and test files are never modified.
 
 ## Planned experimental use
 
 1. Build inputs only from a record's text, speaker information, and preceding retained turns in the same `(split, dialogue_id)` group. History windows count observed turns, not missing numeric IDs.
 2. Keep gold emotion and sentiment annotations out of model inputs and context strings.
-3. Determine the majority class from clean training records. In every neural condition, fine-tune the same RoBERTa-base checkpoint end to end, with the same shared training settings.
+3. Determine the majority class from the training file of the protocol in use (official `train.jsonl` by default). In every neural condition, fine-tune the same RoBERTa-base checkpoint end to end, with the same shared training settings.
 4. Cross history off/on with three auxiliary-feature choices: none, a frozen randomly initialized DeepMoji architecture, and frozen pretrained DeepMoji. This gives six neural conditions. All history-enabled conditions use the same concatenation architecture; both auxiliary branches use only the current utterance and share tokenizer, feature dimension, and preprocessing. Neither the random encoder nor the pretrained DeepMoji encoder is trained on MELD. The original emoji-pretraining corpus is not required or supplied.
 5. Run at least three matched random seeds; report weighted and macro F1 as mean +/- sample standard deviation. Use dev for configuration/early-stopping decisions and reserve test for final evaluation. If paired bootstrap is used, sample whole dialogues and pair predictions by stable sample IDs.
 6. Report which training protocol was used, retain negative results, and interpret pretrained-versus-random differences without assuming they isolate emoji supervision from Twitter-domain exposure. Full specifications and implementation priorities appear in `experiment_plan.md`; published scores are not our own reproduced results.

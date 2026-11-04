@@ -1,6 +1,6 @@
 # Controlled Experiment Plan After the Mentor Meeting
 
-This working plan combines `../milestone1_papers.md` with the user-provided meeting summary from Ethan. It specifies the next implementation stage; it does not claim that models have been trained or TorchMoji compatibility has been verified. The checkpoint, seed list, and numerical defaults below are project working choices that operationalize the feedback, rather than exact settings prescribed by Ethan.
+This working plan combines the Milestone 1 literature review with the user-provided meeting summary from Ethan. It specifies the next implementation stage; it does not claim that models have been trained or TorchMoji compatibility has been verified. The checkpoint, seed list, and numerical defaults below are project working choices that operationalize the feedback, rather than exact settings prescribed by Ethan.
 
 ## 1. Research questions and literature alignment
 
@@ -8,7 +8,7 @@ This working plan combines `../milestone1_papers.md` with the user-provided meet
 2. Do frozen pretrained DeepMoji features improve the same classifier, with and without history?
 3. Does that improvement exceed what an equally sized, architecturally identical frozen random encoder provides?
 
-The three core reviews are **DeepMoji, DialogueRNN, and EmoBERTa**. EmoBERTa replaces DialogueGCN as a full review because its input-concatenation design directly matches the initial implementation. DialogueGCN remains useful background, rather than an additional required implementation.
+The three core reviews in the submitted writeup are **DeepMoji, EmoBERTa, and CoMPM**. EmoBERTa is reviewed because its input-concatenation design directly matches the initial implementation; CoMPM is reviewed as prior work that adds a second pretrained information source (a speaker memory encoder, including a frozen variant) to a RoBERTa context model. DialogueRNN and DialogueGCN remain useful background, rather than additional required implementations.
 
 EmoBERTa already establishes speaker-aware concatenation as prior work. Our proposed contribution is the controlled evaluation of added features and their interaction with that context method, not a claim to invent concatenation.
 
@@ -39,7 +39,7 @@ DeepMoji processes only the current utterance in all feature-enabled conditions.
 
 For the random control, instantiate the same feature-extraction architecture with random parameters, including the word embeddings, recurrent layers, and attention parameters. Do not retain pretrained embeddings in this control. Keep vocabulary/tokenizer, sequence-length policy, parameter shapes, output dimension, padding conventions, and numerical feature processing identical to the pretrained branch.
 
-Both branches have `requires_grad=False`, run in evaluation mode, and are evaluated without gradients. Cache frozen outputs; use a separate random encoder initialization for each training seed. The pretrained weights remain identical across seeds. If auxiliary features are standardized, use the same per-dimension procedure in both branches, fit means/scales on clean training records only, and reuse those statistics for dev/test.
+Both branches have `requires_grad=False`, run in evaluation mode, and are evaluated without gradients. Cache frozen outputs; use a separate random encoder initialization for each training seed. The pretrained weights remain identical across seeds. If auxiliary features are standardized, use the same per-dimension procedure in both branches, fit means/scales on training records only, and reuse those statistics for dev/test.
 
 Concatenate the auxiliary vector with RoBERTa's target-input representation before classification. D and R, and CD and CR, therefore have identical classifier shapes and trainable parameter counts. Feature-free models have a smaller classifier; we do not claim that concatenation keeps that classifier fixed.
 
@@ -57,7 +57,7 @@ Use the same three seeds, **13, 42, and 2026**, for all six conditions. If the b
 
 Working defaults are AdamW, learning rate 2e-5, effective batch size 16, at most five epochs, weight decay 0.01, and linear decay after 10% warmup. Use ordinary unweighted cross entropy in all conditions. Evaluate at each epoch end; select the best checkpoint by dev weighted F1 and stop after two consecutive epochs without improvement, retaining the earlier checkpoint on ties. Lock any revised settings from dev before the final comparison; do not perform unequal per-condition searches or change RoBERTa from fine-tuned to frozen between arms.
 
-Keep the clean train/dev/test protocol from `data.md` fixed. Store predictions with sample IDs for each condition/seed. Report weighted F1 and macro F1 on the same seven labels, plus per-class scores and confusion matrices. Define F1 for an unpredicted class as zero, and use a consistent 0-100 F1 scale in result tables. Report the arithmetic mean and **sample standard deviation (ddof=1)** across seeds, not the best seed or standard error.
+Keep the train/dev/test protocol from `data.md` fixed: the official splits are the main protocol, and the exact-key-filtered `train_clean.jsonl` is only a supplementary sensitivity check. Store predictions with sample IDs for each condition/seed. Report weighted F1 and macro F1 on the same seven labels, plus per-class scores and confusion matrices. Define F1 for an unpredicted class as zero, and use a consistent 0-100 F1 scale in result tables. Report the arithmetic mean and **sample standard deviation (ddof=1)** across seeds, not the best seed or standard error.
 
 Paired bootstrap is an optional uncertainty check. Resample **whole test dialogues**, with replacement, using the identical resampled IDs for both models and every matched seed. Include all turns from each sampled dialogue, recompute both metrics, and average paired score differences across seeds. Use 2,000 resamples to obtain percentile 95% intervals. This respects within-dialogue dependence; the interval describes test-dialogue sampling uncertainty conditional on the trained runs, while across-seed standard deviations describe training variability. Test labels are used only for the final fixed evaluation and subsequent descriptive error analysis, not configuration selection.
 
@@ -73,6 +73,7 @@ Paired bootstrap is an optional uncertainty check. Resample **whole test dialogu
 - **EmoBERTa:** Kim and Vossen (2021), [arXiv:2108.12009](https://arxiv.org/abs/2108.12009). Table 2 reports MELD weighted F1 of 63.46 without context, 64.55 with past-only context, and 65.61 with past plus future context, averaged over five seeds. These are RoBERTa-large results. Appendix A.1 confirms no weights are frozen during training.
 - **DialogueRNN:** Majumder et al. (2019), [original paper](https://arxiv.org/abs/1811.00405v4). Original evaluation is IEMOCAP/AVEC; a MELD number cited by later work should not be misattributed to that original experiment.
 - **DeepMoji:** Felbo et al. (2017), [original paper](https://aclanthology.org/D17-1169/). The paper evaluates frozen features as well as chain-thaw and full fine-tuning, so our frozen branch has a direct methodological precedent.
+- **CoMPM:** Lee and Lee (2022), [NAACL-HLT](https://aclanthology.org/2022.naacl-main.416/). Table 2 reports MELD weighted F1 of 66.52 for CoMPM, 64.90 for the context module alone, and 65.77 with the pretrained memory encoder frozen (three-run means). Its randomly initialized memory variant is trained, unlike our frozen random DeepMoji control.
 - **RoBERTa:** Liu et al. (2019), [model paper](https://arxiv.org/abs/1907.11692). Record the exact checkpoint revision, tokenizer, and software versions when the pipeline is implemented.
 - **COSMIC:** Ghosal et al. (2020), [Findings of EMNLP](https://aclanthology.org/2020.findings-emnlp.224/). It combines RoBERTa utterance features and COMET-derived commonsense representations through recurrent state modeling. It motivates external information in ERC, but is not the same architecture as our direct concatenation classifier.
 - **DialogueGCN:** Ghosal et al. (2019), [EMNLP-IJCNLP](https://aclanthology.org/D19-1015/). Speaker/temporal relation graphs are useful context-modeling background; implementing them is outside the initial scope.
