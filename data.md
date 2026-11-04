@@ -102,15 +102,15 @@ The single matching source-time item is `train:12:7` / `test:85:0`: Joey's utter
 
 ### Suspected scene-level overlap (heuristic audit)
 
-The exact key above requires identical season, episode, timestamps, speaker, and text, so it misses the same scene when MELD segments it differently or records inconsistent metadata. A second, heuristic audit flagged held-out utterances whose normalized text (lowercase alphanumerics, at least 40 characters) is contained in a training utterance or vice versa, or whose speaker, end timestamp, and text prefix match a training utterance. It found no dev matches and the following likely test overlaps:
+The exact key above requires identical season, episode, timestamps, speaker, and text, so it misses the same scene when MELD segments it differently or records inconsistent metadata. A second, heuristic audit flagged held-out utterances whose normalized text (lowercase alphanumerics, at least 40 characters) is contained in a training utterance or vice versa, or whose speaker, end timestamp, and text prefix match a training utterance. These rules flag individual utterances; we then manually reviewed each flagged scene side by side with its training counterpart and added neighboring turns from the same source interval that the rules missed (for example, short lines or re-segmented turns). The rules found no dev matches; the reviewed test overlaps are:
 
 | Test items | Training items | Observation |
 |---|---|---|
 | `test:84:0–2` (whole dialogue) | `train:12:4–6` | Same speakers and text, same or near-identical timestamps; test metadata says season 1, episode 5 instead of 6/4, and all three emotion labels differ |
 | `test:85:0–5` (whole dialogue) | `train:12:7–11` | The same scene segmented differently; only `85:0` / `train:12:7` matches the exact key |
-| `test:155:0–1` | `train:51:8`, `train:51:10` | Adjacent turns from season 3, episode 15 with the same end time and near-identical text |
+| `test:155:0–1` | `train:51:8`, `train:51:10` | Season 3, episode 15; near-identical text and overlapping source intervals. The first pair shares an end time and was flagged by the rules; the second shares a start time and was added on manual review |
 
-This is roughly 11 test utterances in 3 test dialogues (about 0.4% of test). It is a list of suspected same-source overlap found by a heuristic, not a complete inventory: paraphrased or more heavily re-segmented overlap may remain. A recurring line such as `train:776:4` / `test:225:0` from a different time in the same episode was judged a legitimate repetition.
+This is roughly 11 test utterances in 3 test dialogues (about 0.4% of test). It is a list of suspected same-source overlap found by heuristic rules plus manual review of the flagged scenes, not a complete inventory: paraphrased or more heavily re-segmented overlap may remain. A recurring line such as `train:776:4` / `test:225:0` from a different time in the same episode was judged a legitimate repetition.
 
 ### Training protocol
 
