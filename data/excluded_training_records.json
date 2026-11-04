@@ -1,0 +1,19 @@
+[
+  {
+    "id": "train:12:7",
+    "reason": "same season, episode, timestamps, speaker and text as a held-out utterance",
+    "source_row": {
+      "Sr No.": "134",
+      "Utterance": "But um, I don’t think it’s anything serious.",
+      "Speaker": "Joey",
+      "Emotion": "neutral",
+      "Sentiment": "neutral",
+      "Dialogue_ID": "12",
+      "Utterance_ID": "7",
+      "Season": "6",
+      "Episode": "4",
+      "StartTime": "00:10:18,743",
+      "EndTime": "00:10:21,536"
+    }
+  }
+]

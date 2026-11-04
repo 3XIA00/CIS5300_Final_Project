@@ -1,0 +1,8 @@
+emotion,label_id,train_official,train_clean,dev,test
+neutral,0,4710,4709,470,1256
+surprise,1,1205,1205,150,281
+fear,2,268,268,40,50
+sadness,3,683,683,111,208
+joy,4,1743,1743,163,402
+disgust,5,271,271,22,68
+anger,6,1109,1109,153,345

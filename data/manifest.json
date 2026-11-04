@@ -1,0 +1,40 @@
+{
+  "dataset": "MELD, official multiparty text splits",
+  "collection_date": "2026-11-03",
+  "repository": "https://github.com/declare-lab/MELD",
+  "commit": "e8cedf27b5d2877e198332c957127e16eb214afe",
+  "sources": [
+    {
+      "split": "train",
+      "url": "https://raw.githubusercontent.com/declare-lab/MELD/e8cedf27b5d2877e198332c957127e16eb214afe/data/MELD/train_sent_emo.csv",
+      "path": "data/raw/train_sent_emo.csv",
+      "sha256": "d2fa2d6529cf03cac2989efec05c9b27d8fd2f4c8fc5974c7ae88aa537fa02db"
+    },
+    {
+      "split": "dev",
+      "url": "https://raw.githubusercontent.com/declare-lab/MELD/e8cedf27b5d2877e198332c957127e16eb214afe/data/MELD/dev_sent_emo.csv",
+      "path": "data/raw/dev_sent_emo.csv",
+      "sha256": "2e89c6f8aa182d6f62f8c6331aece905ac7273ca4999660bfb5213e1d0370c1c"
+    },
+    {
+      "split": "test",
+      "url": "https://raw.githubusercontent.com/declare-lab/MELD/e8cedf27b5d2877e198332c957127e16eb214afe/data/MELD/test_sent_emo.csv",
+      "path": "data/raw/test_sent_emo.csv",
+      "sha256": "8d37103938f7067600839fe29d5a114a6cd1bcdafb75bec101e06464c5006888"
+    }
+  ],
+  "files_sha256": {
+    "SOURCE_LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "excluded_training_records.json": "d8eb2e4b77fb656978c39f81a4688d3cca3f4429a563fa4ef83d06717b116553",
+    "label_distribution.csv": "6a687b7cb9f641c789763c87084f47ee1a31fed39013927bbc64d18e3af59390",
+    "label_map.json": "b3f7eea731af65548d9df7e715835d921d6d0db12be590cfc46e241bbb770399",
+    "processed/dev.jsonl": "ff187f3535e8303676419809aee02d3bb052ed0587c573a202d85e89308fce97",
+    "processed/test.jsonl": "437715e7ca798680251e6071c7b28ebe66e30c0e6e587dfdbcffe87707e7c6b6",
+    "processed/train.jsonl": "1f9f748980bd10e768f7bbe735fe0cff9268313756748df7286f82b0fed78844",
+    "processed/train_clean.jsonl": "81ac79f249db67528f6fe6b291507ca4fc89af0b686da23567b67117ca74438b",
+    "raw/dev_sent_emo.csv": "2e89c6f8aa182d6f62f8c6331aece905ac7273ca4999660bfb5213e1d0370c1c",
+    "raw/test_sent_emo.csv": "8d37103938f7067600839fe29d5a114a6cd1bcdafb75bec101e06464c5006888",
+    "raw/train_sent_emo.csv": "d2fa2d6529cf03cac2989efec05c9b27d8fd2f4c8fc5974c7ae88aa537fa02db",
+    "statistics.json": "aec1a812842405bac77b404895832fa4442a88c956ff9a1c177ff617bde3fe0f"
+  }
+}
