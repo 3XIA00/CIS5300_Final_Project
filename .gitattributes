@@ -1,0 +1,4 @@
+# Keep data files byte-identical across platforms so the SHA-256 checksums in
+# data/manifest.json (checked by prepare_data.py --verify-only) still match on Windows.
+data/** -text
+*.tar.gz binary
