@@ -34,7 +34,7 @@ Macro F1 always averages over all seven classes, including any class with zero s
 
 ## Why these metrics
 
-- **Weighted F1 is the standard MELD metric.** The MELD paper (Poria et al., 2019) reports weighted F1 for its baselines, and the three papers in our literature review report MELD results the same way: EmoBERTa (Kim and Vossen, 2021) and CoMPM (Lee and Lee, 2022). Using it keeps our numbers comparable with published results.
+- **Weighted F1 is the standard MELD metric.** The MELD paper (Poria et al., 2019) reports weighted F1 for its baselines, and the two papers in our literature review that evaluate on MELD report it the same way: EmoBERTa (Kim and Vossen, 2021) and CoMPM (Lee and Lee, 2022). (DeepMoji, the third, does not evaluate on MELD.) Using it keeps our numbers comparable with published results.
 - **Macro F1 is needed because MELD is imbalanced.** `neutral` is 48% of the test set while `fear` and `disgust` are about 2–3% each. Weighted F1 is dominated by the large classes: the all-`neutral` baseline below already gets 31.27 weighted F1 but only 9.28 macro F1. Macro F1 weighs every class equally (Sokolova and Lapalme, 2009), so gains or losses on rare emotions stay visible. This matters for our research question, since emoji features may help specific emotions more than others.
 - **Per-class scores and the confusion matrix** are printed so error analysis does not need separate code.
 - **Accuracy** is reported for reference only; on imbalanced data it says little beyond the majority rate.
@@ -45,7 +45,7 @@ Macro F1 always averages over all seven classes, including any class with zero s
 - **Strict input checks.** The script stops with an error instead of producing a score if any gold id has no prediction, a prediction id is not in the gold file, an id appears twice, a label is not one of the seven classes, or a prediction line has fields other than `id` and `label`. A silently wrong score is worse than no score.
 - **Matching by `id`**, never by line order (see interface.md).
 - **`--exclude-ids`** reports the same predictions on a subset. Following the mentor's feedback, every test result is reported both on the full test set and without the 11 suspected-overlap utterances in `eval/suspected_overlap_test_ids.json`. The prediction file must still cover the full test set, so one file serves both reports; every excluded id must exist in the gold file, so a wrong split or a typo is caught.
-- **Verified against scikit-learn.** Implementing the formulas directly keeps the definitions explicit. On 200 random prediction sets over the real test set (uniform, mostly correct, never predicting some classes, all-`neutral`), weighted F1, macro F1, accuracy and every per-class precision/recall/F1 match `sklearn.metrics` (Pedregosa et al., 2011) with `zero_division=0` to within 1.1e-16. `tests/test_score.py` covers a hand-computed example and every rejected input.
+- **Verified against scikit-learn.** Implementing the formulas directly keeps the definitions explicit. On 200 random prediction sets over the real test set (uniform, mostly correct, never predicting some classes, all-`neutral`), weighted F1, macro F1, accuracy and every per-class precision/recall/F1 match `sklearn.metrics` (Pedregosa et al., 2011) with `labels` set to all seven classes and `zero_division=0` to within 1.1e-16. This comparison is `tests/test_score_vs_sklearn.py` (skipped when scikit-learn is not installed); `tests/test_score.py` covers a hand-computed example and every rejected input. Note that scikit-learn's default macro F1, without `labels`, averages only over classes present in the gold or predicted labels; on the full and overlap-excluded test sets all seven classes are present, so the two agree.
 
 ## Usage
 
@@ -108,7 +108,8 @@ score.py: error: 2605 gold ids have no prediction (e.g. ['test:100:0', 'test:100
 ### Tests
 
 ```bash
-python -m unittest discover tests
+python -m unittest discover tests                                              # sklearn comparison skipped if not installed
+uv run --no-project --with scikit-learn python -m unittest discover tests      # includes the sklearn comparison
 ```
 
 ## References
