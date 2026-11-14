@@ -44,6 +44,7 @@ strong_baseline/
   model.py     RoBERTa + linear classifier on <s>; aux_dim hook for DeepMoji features in M3
   train.py     training loop, dev selection, predictions, scores, run.json
   predict.py   regenerate predictions from a saved checkpoint
+  colab.ipynb  run everything on a Colab GPU and save the results
   requirements.txt
 ```
 
@@ -61,7 +62,7 @@ python -m strong_baseline.train --seed 42 --fp16
 python -m strong_baseline.train --seed 2026 --fp16
 ```
 
-On Colab: Runtime → Change runtime type → GPU, then
+On Colab, the easiest way is the notebook [`strong_baseline/colab.ipynb`](https://colab.research.google.com/github/3XIA00/CIS5300_Final_Project/blob/m2-strong-baseline/strong_baseline/colab.ipynb) (opens directly in Colab; after merging, replace `m2-strong-baseline` in the link with `main`). It checks the GPU, runs the smoke test and the seeds, prints the results table, and saves `output/roberta-base/` by download, Google Drive or a push to the branch. To run the commands by hand instead: Runtime → Change runtime type → GPU, then
 
 ```bash
 !git clone https://github.com/3XIA00/CIS5300_Final_Project.git
