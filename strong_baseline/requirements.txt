@@ -1,0 +1,3 @@
+# Strong baseline only; score.py and the simple baseline need nothing beyond Python 3.
+torch>=2.1
+transformers>=4.40
