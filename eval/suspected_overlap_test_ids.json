@@ -1,0 +1,8 @@
+{
+  "description": "Test utterances flagged in data.md as suspected same-source overlap with training data (heuristic rules plus manual review; not a complete inventory). Report test scores with and without these ids: python score.py ... --exclude-ids eval/suspected_overlap_test_ids.json",
+  "ids": [
+    "test:84:0", "test:84:1", "test:84:2",
+    "test:85:0", "test:85:1", "test:85:2", "test:85:3", "test:85:4", "test:85:5",
+    "test:155:0", "test:155:1"
+  ]
+}

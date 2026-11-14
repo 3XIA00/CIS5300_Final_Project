@@ -1,0 +1,12 @@
+# Model checkpoints and training artifacts: large and reproducible from code + seed (interface.md)
+checkpoints/
+runs/
+wandb/
+*.pt
+*.bin
+*.safetensors
+
+# Python
+__pycache__/
+*.pyc
+.venv/
