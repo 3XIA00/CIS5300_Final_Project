@@ -96,16 +96,30 @@ Other options: `python -m strong_baseline.train --help` (for example `--train-sp
 
 ## Results
 
-*To be filled in after the GPU runs.* Report weighted F1 and macro F1 (0–100) on dev, full test, and test without the 11 suspected-overlap utterances; for several seeds, the mean and sample standard deviation (ddof = 1).
+Five seeds, each trained once on Google Colab with `--fp16` and all other settings as above (same code, `roberta-base` revision `e2da8e2`, PyTorch 2.14.1, Transformers 5.22.1). Scores are weighted F1 (W-F1) and macro F1 (M-F1) on a 0–100 scale, computed by `score.py`; "excl. overlap" leaves out the 11 suspected-overlap test utterances (`eval/suspected_overlap_test_ids.json`). The last row is the mean and sample standard deviation (ddof = 1) over the five seeds. Predictions and full logs are in `output/roberta-base/seed<N>/`.
 
-| Run | Dev W-F1 | Dev M-F1 | Test W-F1 | Test M-F1 | Test excl. overlap W-F1 | Test excl. overlap M-F1 | Best epoch | Time | Peak GPU memory |
-|---|---|---|---|---|---|---|---|---|---|
-| seed 13 | | | | | | | | | |
-| seed 42 | | | | | | | | | |
-| seed 2026 | | | | | | | | | |
-| mean ± sd | | | | | | | | | |
+| Seed | GPU | Dev W-F1 | Dev M-F1 | Test W-F1 | Test M-F1 | Test excl. overlap W-F1 | Test excl. overlap M-F1 | Best epoch | Train time | Peak GPU memory |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 13 | L4 | 59.32 | 45.48 | 63.90 | 47.07 | 63.95 | 47.12 | 4 | 4.8 min | 2.4 GB |
+| 42 | L4 | 59.87 | 46.23 | 63.22 | 45.55 | 63.25 | 45.61 | 2 | 3.9 min | 2.4 GB |
+| 2026 | L4 | 58.75 | 42.29 | 63.72 | 45.72 | 63.71 | 45.66 | 2 | 3.9 min | 2.4 GB |
+| 31415 | T4 | 59.76 | 42.59 | 62.21 | 41.94 | 62.20 | 41.85 | 2 | 3.9 min | 2.4 GB |
+| 27182 | T4 | 60.17 | 41.77 | 63.61 | 43.83 | 63.61 | 43.79 | 2 | 3.9 min | 2.4 GB |
+| **mean ± sd** | | **59.57 ± 0.55** | **43.67 ± 2.03** | **63.33 ± 0.67** | **44.82 ± 1.98** | **63.34 ± 0.69** | **44.81 ± 2.03** | | | |
 
-For reference, EmoBERTa reports 63.46 test weighted F1 without context using RoBERTa-large (five-seed mean); RoBERTa-base is expected to score lower. Our goal is a controlled comparison between conditions, not matching that number.
+Test F1 per class (range over the five seeds):
+
+| neutral | surprise | fear | sadness | joy | disgust | anger |
+|---|---|---|---|---|---|---|
+| 78.6–80.1 | 55.7–58.4 | 3.6–21.4 | 32.8–36.8 | 57.0–62.3 | 12.2–26.4 | 44.5–49.0 |
+
+Observations:
+
+- The baseline reaches 63.33 test weighted F1, far above the majority-class baseline (31.27; `scoring.md`) and close to the 63.46 that EmoBERTa reports without context using the larger RoBERTa-large (five-seed mean; Kim and Vossen, 2021). Our goal is a controlled comparison between conditions, not matching that number.
+- Weighted F1 is stable across seeds (sd 0.67), while macro F1 varies about three times as much (sd ~2.0). The variation comes from the rare classes: `fear` (50 test utterances) and `disgust` (68) are rarely predicted, and their F1 swings between seeds. Comparisons in Milestone 3 should therefore look at macro F1 and these classes and use all seeds, not a single run.
+- Excluding the 11 suspected-overlap utterances changes the mean scores by 0.01 (at most 0.09 for a single seed), so the overlap found in Milestone 1 does not affect the conclusions.
+- Most runs peak at epoch 2 and stop at epoch 4; dev macro F1 often keeps rising after the weighted-F1 peak, but model selection uses dev weighted F1 as fixed in advance.
+- Runs were split across two Colab GPU types (L4 and T4); this can cause tiny numerical differences but does not change the setup.
 
 ## References
 
