@@ -1,0 +1,124 @@
+{
+  "system": "roberta-base",
+  "config": {
+    "model": "roberta-base",
+    "system": "roberta-base",
+    "seed": 2026,
+    "train_split": "train",
+    "history": 0,
+    "max_length": 128,
+    "lr": 2e-05,
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "epochs": 5,
+    "patience": 2,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "dropout": 0.1,
+    "fp16": true,
+    "device": "auto",
+    "limit": null,
+    "output_dir": null,
+    "checkpoint_dir": null,
+    "no_checkpoint": false
+  },
+  "best_epoch": 2,
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 1.3104,
+      "dev": {
+        "weighted_f1": 55.95,
+        "macro_f1": 36.19,
+        "accuracy": 60.05,
+        "n": 1109
+      },
+      "seconds": 58.7,
+      "best": true
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.0369,
+      "dev": {
+        "weighted_f1": 58.75,
+        "macro_f1": 42.29,
+        "accuracy": 61.59,
+        "n": 1109
+      },
+      "seconds": 58.2,
+      "best": true
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.8516,
+      "dev": {
+        "weighted_f1": 58.0,
+        "macro_f1": 43.67,
+        "accuracy": 59.87,
+        "n": 1109
+      },
+      "seconds": 58.4,
+      "best": false
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.6852,
+      "dev": {
+        "weighted_f1": 58.47,
+        "macro_f1": 43.41,
+        "accuracy": 60.41,
+        "n": 1109
+      },
+      "seconds": 58.4,
+      "best": false
+    }
+  ],
+  "results": {
+    "dev": {
+      "weighted_f1": 58.75,
+      "macro_f1": 42.29,
+      "accuracy": 61.59,
+      "n": 1109
+    },
+    "test": {
+      "weighted_f1": 63.72,
+      "macro_f1": 45.72,
+      "accuracy": 65.36,
+      "n": 2610
+    },
+    "test_excluding_suspected_overlap": {
+      "weighted_f1": 63.71,
+      "macro_f1": 45.66,
+      "accuracy": 65.37,
+      "n": 2599
+    }
+  },
+  "train_seconds": 234.3,
+  "peak_gpu_memory_mb": 2411,
+  "device": "NVIDIA L4",
+  "token_lengths": {
+    "train": {
+      "max": 94,
+      "p95": 34,
+      "truncated": 0
+    },
+    "dev": {
+      "max": 66,
+      "p95": 32,
+      "truncated": 0
+    },
+    "test": {
+      "max": 67,
+      "p95": 35,
+      "truncated": 0
+    }
+  },
+  "model_revision": "e2da8e2f811d1448a5b465c236feacd80ffbac7b",
+  "versions": {
+    "python": "3.13.16",
+    "torch": "2.14.1+cu130",
+    "transformers": "5.22.1"
+  },
+  "limit": null
+}
