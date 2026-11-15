@@ -1,0 +1,7 @@
+# DeepMoji feature extraction and checks, on top of strong_baseline/requirements.txt (torch, transformers).
+# torchMoji itself is not a pip package here: python -m deepmoji.setup_torchmoji clones and patches it.
+# Versions used for the results in deepmoji.md (Python 3.13, torch 2.14.1).
+numpy==2.5.4
+scikit-learn==1.9.1
+emoji==0.6.0          # torchMoji uses emoji.UNICODE_EMOJI, removed in emoji 1.0
+text-unidecode==1.3
