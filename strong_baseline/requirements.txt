@@ -1,3 +1,5 @@
 # Strong baseline only; score.py and the simple baseline need nothing beyond Python 3.
-torch>=2.1
-transformers>=4.40
+# Pinned to the versions used for the reported results (see output/roberta-base/*/run.json).
+# On Colab, torch==2.14.1 also matches the preinstalled CUDA build (e.g. 2.14.1+cu130).
+torch==2.14.1
+transformers==5.22.1

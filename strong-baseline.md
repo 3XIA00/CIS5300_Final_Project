@@ -32,7 +32,7 @@ Settings follow `experiment_plan.md`:
 | Epochs | at most 5; stop after 2 epochs without dev improvement |
 | Model selection | best dev weighted F1 (ties keep the earlier epoch) |
 | Other | dropout 0.1 before the classifier, gradient clipping at norm 1.0 |
-| Seeds | 13, 42, 2026 (add 31415, 27182 if time allows); the seed fixes initialization of the classifier and data order |
+| Seeds | 13, 42, 2026, 31415, 27182 (all five run; see Results); the seed fixes initialization of the classifier, dropout and data order |
 
 Test labels are never used for training or model selection.
 
@@ -57,12 +57,13 @@ Training needs a GPU (Colab, or a school machine). From the repository root:
 ```bash
 pip install -r strong_baseline/requirements.txt
 python -m strong_baseline.train --seed 13 --limit 64 --epochs 1    # smoke test, about a minute
-python -m strong_baseline.train --seed 13 --fp16                   # full run
-python -m strong_baseline.train --seed 42 --fp16
-python -m strong_baseline.train --seed 2026 --fp16
+python -m strong_baseline.train --seed 13 --fp16                   # full run, about 4-5 min on a T4/L4
+python -m strong_baseline.train --seed 42 --fp16                   # repeat for 2026, 31415, 27182
 ```
 
-On Colab, the easiest way is the notebook [`strong_baseline/colab.ipynb`](https://colab.research.google.com/github/3XIA00/CIS5300_Final_Project/blob/m2-strong-baseline/strong_baseline/colab.ipynb) (opens directly in Colab; after merging, replace `m2-strong-baseline` in the link with `main`). It checks the GPU, runs the smoke test and the seeds, prints the results table, and saves `output/roberta-base/` by download, Google Drive or a push to the branch. To run the commands by hand instead: Runtime → Change runtime type → GPU, then
+`requirements.txt` pins the versions used for the reported results (PyTorch 2.14.1, Transformers 5.22.1).
+
+On Colab, the easiest way is the notebook [`strong_baseline/colab.ipynb`](https://colab.research.google.com/github/3XIA00/CIS5300_Final_Project/blob/m2-strong-baseline/strong_baseline/colab.ipynb) (opens directly in Colab; after merging, replace `m2-strong-baseline` in the link with `main`). It checks the GPU, runs the smoke test and the seeds, prints the results table, and saves `output/roberta-base/` by download, Google Drive or a push to the branch. Usually one person collects everyone's zip and pushes; the push option asks for a fine-grained token scoped to this repo and never prints or stores it. To run the commands by hand instead: Runtime → Change runtime type → GPU, then
 
 ```bash
 !git clone https://github.com/3XIA00/CIS5300_Final_Project.git
@@ -74,7 +75,7 @@ On Colab, the easiest way is the notebook [`strong_baseline/colab.ipynb`](https:
 Each run writes, per `interface.md`:
 
 - `output/roberta-base/seed<N>/dev.jsonl` and `test.jsonl`: predictions (commit these)
-- `output/roberta-base/seed<N>/run.json`: all settings, dev scores per epoch, best epoch, dev and test scores, training time, peak GPU memory, GPU name, token-length statistics, library versions and model revision (commit this)
+- `output/roberta-base/seed<N>/run.json`: all settings, dev scores per epoch, best epoch, dev and test scores, training time, peak GPU memory, GPU name, token-length statistics, library versions, model revision and the git commit of the code (commit this; runs made before the commit field was added do not have it)
 - `checkpoints/roberta-base/seed<N>/model.pt`: best weights, about 500 MB (git-ignored; do not commit)
 
 Scores are printed at the end of training. To recompute them with the shared scorer:

@@ -24,6 +24,7 @@ import argparse
 import json
 import platform
 import random
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -163,6 +164,18 @@ def model_revision(model_name):
     return None
 
 
+def code_version():
+    """Git commit of this code and whether it had uncommitted changes (None outside a git checkout)."""
+    try:
+        commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True,
+                                check=True).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "strong_baseline", "score.py"], cwd=ROOT,
+                               capture_output=True, text=True, check=True).stdout.strip() != ""
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return {"commit": commit, "uncommitted_changes": dirty}
+
+
 def summary(metrics):
     return {k: round(100 * metrics[k], 2) for k in ("weighted_f1", "macro_f1", "accuracy")} | {"n": metrics["n"]}
 
@@ -283,6 +296,7 @@ def main(argv=None):
         "device": torch.cuda.get_device_name(device) if device.type == "cuda" else device.type,
         "token_lengths": {name: d.length_stats for name, d in data.items()},
         "model_revision": model_revision(args.model),
+        "code": code_version(),
         "versions": {"python": platform.python_version(), "torch": torch.__version__,
                      "transformers": transformers.__version__},
         "limit": args.limit,
