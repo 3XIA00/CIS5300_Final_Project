@@ -9,8 +9,9 @@ from pathlib import Path
 
 from score import DEFAULT_LABELS, ScoringError, load_id_labels, load_labels, read_jsonl
 
-DATA = Path("data/processed")
-OUTPUT = Path("output/simple-baseline")
+ROOT = Path(__file__).resolve().parent
+DATA = ROOT / "data" / "processed"
+OUTPUT = ROOT / "output" / "simple-baseline"
 
 
 def read_prediction_ids(path):
@@ -60,7 +61,10 @@ def main(argv=None):
         return 1
 
     print(f"Training majority: {majority} ({counts[majority]:,}/{len(train_labels):,})")
-    print(f"Wrote {len(ids):,} predictions to {output_path}")
+    shown_path = output_path
+    if args.output is None and Path.cwd() == ROOT:
+        shown_path = output_path.relative_to(ROOT)
+    print(f"Wrote {len(ids):,} predictions to {shown_path}")
     return 0
 
 

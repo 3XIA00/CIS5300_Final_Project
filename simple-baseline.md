@@ -14,7 +14,7 @@ python score.py --gold data/processed/test.jsonl --pred output/simple-baseline/t
 python score.py --gold data/processed/test.jsonl --pred output/simple-baseline/test.jsonl --exclude-ids eval/suspected_overlap_test_ids.json
 ```
 
-The baseline uses only the Python standard library. The default split is `test`. Use `--train PATH` to specify a different training JSONL file or `--output PATH` to change where predictions are written. [The notebook](simple-baseline.ipynb) runs the same commands in Jupyter or Colab.
+The baseline uses only the Python standard library. The default split is `test`. You can also run `python /path/to/CIS5300_Final_Project/simple-baseline.py --split test` from another directory. The default input and output paths are relative to the repository root. If you pass `--train PATH` or `--output PATH`, a relative path is resolved from your current directory. [The notebook](simple-baseline.ipynb) runs the same commands in Jupyter or Colab.
 
 The first two lines of `output/simple-baseline/test.jsonl` follow the [shared prediction interface](interface.md):
 
