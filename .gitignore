@@ -6,6 +6,9 @@ wandb/
 *.bin
 *.safetensors
 
+# 3XIA00's local list of reviews awaiting acceptance
+3XIA00_TODO.md
+
 # Python
 __pycache__/
 *.pyc
