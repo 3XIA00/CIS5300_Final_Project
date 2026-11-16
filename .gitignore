@@ -6,6 +6,11 @@ wandb/
 *.bin
 *.safetensors
 
+# DeepMoji: patched torchMoji checkout + 85 MB weights (python -m deepmoji.setup_torchmoji),
+# and extracted features (python -m deepmoji.extract_features, seconds to regenerate)
+third_party/
+features/
+
 # 3XIA00's local list of reviews awaiting acceptance
 3XIA00_TODO.md
 

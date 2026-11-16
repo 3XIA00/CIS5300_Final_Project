@@ -49,6 +49,8 @@ simple-baseline.py        # majority-class baseline (course file name)
 simple-baseline.md
 strong_baseline/          # RoBERTa-base code (package; underscores so it can be imported)
 strong-baseline.md
+deepmoji/                 # frozen DeepMoji features: setup, extraction, checks (deepmoji.md)
+deepmoji.md
 eval/
   suspected_overlap_test_ids.json
 output/
